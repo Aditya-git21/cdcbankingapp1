@@ -1,0 +1,55 @@
+
+
+```
+=== LAB 7.1: AWS Config + Lambda Incident Remediation ===
+
+--- TASK 1: Check IAM Roles ---
+1. IAM → Roles → open AwsConfigLambdaSGRole → confirm it has EC2 + logs permissions
+2. Open AwsConfigRole → Add permissions → Attach policies → search "Config" → select AWS_ConfigRole → Add permissions
+
+--- TASK 2: Enable AWS Config ---
+1. Go to AWS Config → Get started
+2. Recording strategy: Specific resource types → AWS EC2 SecurityGroup → Frequency: Continuous
+3. IAM role: Choose a role from your account → select AwsConfigRole
+4. Delivery channel: keep defaults → Next
+5. Skip managed rules → Next → Confirm
+6. Go to Resources → wait for EC2 security groups to appear
+
+--- TASK 3: Simulate a Security Incident ---
+1. Go to VPC → Filter by VPC: Lab VPC → Security groups → select LabSG1
+2. Inbound rules tab → Edit inbound rules
+3. Change existing HTTP rule source to: Anywhere-IPv4
+4. Add rule → HTTPS → Anywhere-IPv4
+5. Add rule → SMTPS → Anywhere-IPv4
+6. Add rule → IMAPS → Anywhere-IPv4
+7. Save rules
+
+--- TASK 4: Create the AWS Config Rule ---
+1. Copy LambdaFunctionARN from the lab AWS Details panel
+2. Go to AWS Config → Rules → Add rule → Create custom Lambda rule → Next
+3. Paste Lambda ARN
+4. Name: EC2SecurityGroup
+5. Description: Restrict inbound ports to HTTP and HTTPS
+6. Trigger type: When configuration changes
+7. Scope of changes: Resources → AWS EC2 SecurityGroup
+8. Parameters → Key: debug | Value: true
+9. Next → Save
+10. Open EC2SecurityGroup rule → wait until all resources show Compliant (few minutes)
+
+--- TASK 5: Verify Auto-Remediation ---
+1. Go to VPC → Lab VPC → Security groups → LabSG1 → Inbound rules tab
+2. Confirm: SMTPS (port 465) and IMAPS (port 993) are GONE
+3. Confirm: HTTP and HTTPS are present (IPv4 + IPv6)
+4. Optional: Lambda console → Functions → awsconfig_lambda_security_group → read the code
+
+--- TASK 6: Check CloudWatch Logs ---
+1. Go to CloudWatch → Logs → Log groups → awsconfig_lambda_security_group
+2. Click: Search all
+3. Filter events: type "revoking for" → press Enter
+4. Expand each log event → confirm port 465 and 993 were revoked
+5. Go back to lab → click Submit → confirm grade
+```
+
+
+
+  
