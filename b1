@@ -1,0 +1,95 @@
+Here are clean copy-paste steps for all questions:
+
+```
+=== CCE 5253 Cloud Security Essentials Lab - End Semester Exam ===
+
+--- Q1 Write-up: Principle of Least Privilege (10 marks) ---
+Write the following points:
+- Definition: Give users/services only the minimum permissions needed to do their job
+- No extra access beyond what is required
+- Reduces attack surface if account is compromised
+- Example: A developer only gets S3 read/write, not admin access
+- AWS implementation: IAM policies, roles, and permission boundaries enforce this
+- Regular audits should be done to remove unused permissions
+
+-------------------------------------------------------------------
+
+--- Q2: AWS IAM Setup for ABCDocs (15 marks) ---
+
+STEP 1 - Create IAM Groups:
+1. IAM → User groups → Create group → Name: Developers → Create
+2. IAM → User groups → Create group → Name: Auditors → Create
+
+STEP 2 - Create IAM Users:
+1. IAM → Users → Add users → Name: Dev-user → Next
+   Select group: Developers → Next → Create user
+2. IAM → Users → Add users → Name: Audit-user → Next
+   Select group: Auditors → Next → Create user
+
+STEP 3 - Configure Permissions:
+1. IAM → User groups → Developers → Permissions → Add permissions
+   → Attach policies → search "S3" → select AmazonS3FullAccess → Add
+2. IAM → User groups → Auditors → Permissions → Add permissions
+   → Attach policies → search "S3" → select AmazonS3ReadOnlyAccess → Add
+
+STEP 4 - Configure IAM Password Policy:
+1. IAM → Account settings → Edit password policy
+2. Minimum password length: 10
+3. Check: Require numbers
+4. Check: Require symbols
+5. Save changes
+
+STEP 5 - Enable MFA for IAM Users:
+1. IAM → Users → Dev-user → Security credentials → Assign MFA device
+2. Choose: Authenticator app → Next → scan QR with phone app → enter 2 codes → Add MFA
+3. Repeat same steps for Audit-user
+
+STEP 6 - Demonstrate Login:
+1. Copy the IAM sign-in URL from IAM Dashboard
+2. Open browser → paste URL → login with Dev-user credentials
+3. Show S3 access works
+4. Login with Audit-user → show read-only access
+
+-------------------------------------------------------------------
+
+--- Q3: CloudTrail + CloudWatch Monitoring for ABCDocs (15 marks) ---
+
+STEP 1 - Enable AWS CloudTrail:
+1. Go to CloudTrail → Create trail
+2. Trail name: ABCDocs-trail
+3. Apply to all regions: Yes → Next → Create trail
+
+STEP 2 - Store CloudTrail Logs in S3:
+1. During trail creation → S3 bucket: Create new → name: abcdocs-cloudtrail-logs
+2. (This is auto-configured when creating the trail)
+
+STEP 3 - Create CloudWatch Alarms:
+
+  Alarm A - EC2 CPU > 80%:
+  1. CloudWatch → Alarms → Create alarm → Select metric
+  2. EC2 → Per-Instance Metrics → CPUUtilization → Select metric
+  3. Threshold: Greater than 80 → Next
+  4. Notification: Create new SNS topic (or use existing) → Next → Name: CPU-High-Alarm → Create
+
+  Alarm B - High Network Traffic:
+  1. CloudWatch → Alarms → Create alarm → Select metric
+  2. EC2 → Per-Instance Metrics → NetworkIn → Select metric
+  3. Threshold: set a high value (e.g. 10000000 bytes) → Next
+  4. Attach SNS topic → Next → Name: Network-High-Alarm → Create
+
+STEP 4 - Create SNS Topic and Add Email:
+1. Go to SNS → Topics → Create topic
+2. Type: Standard → Name: ABCDocs-Alerts → Create topic
+3. Subscriptions → Create subscription
+4. Protocol: Email → Endpoint: your-email@example.com → Create
+5. Go to your email → confirm the subscription link
+
+STEP 5 - Link CloudWatch Alarms to SNS:
+1. CloudWatch → Alarms → open CPU-High-Alarm → Edit
+2. Notification → In alarm → select ABCDocs-Alerts SNS topic → Update alarm
+3. Repeat for Network-High-Alarm
+
+-------------------------------------------------------------------
+
+Q4 - Viva (10 marks): Be ready to explain what you did in Q2 and Q3
+```
