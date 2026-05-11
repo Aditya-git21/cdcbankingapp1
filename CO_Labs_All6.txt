@@ -1,3 +1,14 @@
+static website mod2-activity2
+ec2-dynamic(troubleshoot create instance) mod3-activity3
+mod4 lab3-auto scalling + activity4-route53, failover routing 
+srverless lambda mod5-activity5
+rds(unmanaged2managed)-mod6-activity6
+toubleshoot vpc -mod7-activity7(website not accessible, cant do ssh)
+ebs-mod8-lab5(managing storage)
+chaos-user(hack,monkey img) -mod9-activity9 + lab6-monitoring infra(sns)
+automation with cloud formation -mod11-lab8 + tiubleshoot CF -activity11 
+
+
 Lab 1 - Module 2: S3 Static Website
 
 - Download pem key, change permissions
